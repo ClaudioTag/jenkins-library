@@ -171,6 +171,8 @@ def call(body) {
           stage ('Docker Build') {
             container ('docker') {
               imageTag = gitCommit
+              def dockerImages = sh(script: 'docker images', returnStdout: true)
+              echo ${dockerImages}
               def buildCommand = "docker build -t ${image}:${imageTag} "
               buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
               def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
