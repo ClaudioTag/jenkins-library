@@ -170,7 +170,9 @@ def call(body) {
           
           stage ('Docker Build') {
             container ('docker') {
-              imageTag = gitCommit
+// Test to see if it picks up a specific image
+              imageTag = "latest"
+//              imageTag = gitCommit
               def dockerImages = sh(script: 'docker images', returnStdout: true)
               echo "${dockerImages}"
               def buildCommand = "docker build -t ${image}:${imageTag} "
