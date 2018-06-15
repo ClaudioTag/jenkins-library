@@ -67,15 +67,15 @@ def call(body) {
   // will need to check later if user provided chartFolder location
   def userSpecifiedChartFolder = config.chartFolder
   
-  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  echo "Overriding chart folder it'll always be iib-mq-helm!"
   
-  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  echo "Overriding chart folder it'll always be iib-mq-helm!"
   
-  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  echo "Overriding chart folder it'll always be iib-mq-helm!"
   
-  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  echo "Overriding chart folder it'll always be iib-mq-helm!"
   
-  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  echo "Overriding chart folder it'll always be iib-mq-helm!"
   
   def chartFolder = userSpecifiedChartFolder ?: ((env.CHART_FOLDER ?: "").trim() ?: 'iib-mq-helm')
   echo "Determined chart folder as ${chartFolder}"
