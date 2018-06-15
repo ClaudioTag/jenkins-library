@@ -67,19 +67,7 @@ def call(body) {
   // will need to check later if user provided chartFolder location
   def userSpecifiedChartFolder = config.chartFolder
   
-  echo "Overriding chart folder it'll always be iib-mq-helm!"
-  
-  echo "Overriding chart folder it'll always be iib-mq-helm!"
-  
-  echo "Overriding chart folder it'll always be iib-mq-helm!"
-  
-  echo "Overriding chart folder it'll always be iib-mq-helm!"
-  
-  echo "Overriding chart folder it'll always be iib-mq-helm!"
-  
-  def chartFolder = userSpecifiedChartFolder ?: ((env.CHART_FOLDER ?: "").trim() ?: 'iib-mq-helm')
-  echo "Determined chart folder as ${chartFolder}"
-  echo "user specified folder: ${userSpecifiedChartFolder}"
+  def chartFolder = userSpecifiedChartFolder ?: ((env.CHART_FOLDER ?: "").trim() ?: 'chart')
   def manifestFolder = config.manifestFolder ?: ((env.MANIFEST_FOLDER ?: "").trim() ?: 'manifests')
   def libertyLicenseJarBaseUrl = (env.LIBERTY_LICENSE_JAR_BASE_URL ?: "").trim()
   def libertyLicenseJarName = config.libertyLicenseJarName ?: (env.LIBERTY_LICENSE_JAR_NAME ?: "").trim()
@@ -224,14 +212,12 @@ def call(body) {
       if (fileExists(chartFolder)) {
         // find the likely chartFolder location
         realChartFolder = getChartFolder(userSpecifiedChartFolder, chartFolder)
-        print "debug, real chart folder ${realChartFolder}"
         
         def yamlContent = "image:"
         yamlContent += "\n  repository: ${registry}${image}"
         if (imageTag) yamlContent += "\n  tag: \\\"${imageTag}\\\""
         sh "echo \"${yamlContent}\" > pipeline.yaml"
       } else if (fileExists(manifestFolder)){
-        print "debug, found manifest folder"
         sh "find ${manifestFolder} -type f | xargs sed -i 's|\\(image:\\s*\\)${image}:latest|\\1${registry}${image}:latest|g'"
         sh "find ${manifestFolder} -type f | xargs sed -i 's|\\(image:\\s*\\)${registry}${image}:latest|\\1${registry}${image}:${gitCommit}|g'"
       }
@@ -325,12 +311,8 @@ def initalizeHelm (String tillerNamespace) {
   }
 }
 
-def deployProject (String chartFolder, String registry, String image, String imageTag, String namespace, String manifestFolder, String registrySecret) {
-  print "debug in deploy project logic"
-  print "chart folder is ${chartFolder}"
-  
+def deployProject (String chartFolder, String registry, String image, String imageTag, String namespace, String manifestFolder, String registrySecret) {  
   if (chartFolder != null && fileExists(chartFolder)) {
-    print "chart folder isn't null and file exists ok"
     container ('helm') {
       def deployCommand = "helm upgrade --install --wait --values pipeline.yaml"
       if (fileExists("chart/overrides.yaml")) {
@@ -343,7 +325,6 @@ def deployProject (String chartFolder, String registry, String image, String ima
       }
       def releaseName = (env.BRANCH_NAME == "master") ? "${image}" : "${image}-${env.BRANCH_NAME}"
       deployCommand += " ${releaseName} ${chartFolder}"
-      print "debug determined deploy command is ${deployCommand}"
       sh deployCommand
     }
   } else if (fileExists(manifestFolder)) {
