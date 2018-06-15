@@ -313,6 +313,8 @@ def initalizeHelm (String tillerNamespace) {
 
 def deployProject (String chartFolder, String registry, String image, String imageTag, String namespace, String manifestFolder, String registrySecret) {
   print "debug in deploy project logic"
+  print "chart folder is ${chartFolder}"
+  
   if (chartFolder != null && fileExists(chartFolder)) {
     print "chart folder isn't null and file exists ok"
     container ('helm') {
