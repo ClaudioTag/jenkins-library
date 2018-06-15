@@ -66,7 +66,18 @@ def call(body) {
   def debug = (config.debug ?: (env.DEBUG ?: "false").trim()).toLowerCase() == 'true'
   // will need to check later if user provided chartFolder location
   def userSpecifiedChartFolder = config.chartFolder
-  def chartFolder = userSpecifiedChartFolder ?: ((env.CHART_FOLDER ?: "").trim() ?: 'chart')
+  
+  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  
+  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  
+  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  
+  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  
+  echp "Overriding chart folder it'll always be iib-mq-helm!"
+  
+  def chartFolder = userSpecifiedChartFolder ?: ((env.CHART_FOLDER ?: "").trim() ?: 'iib-mq-helm')
   echo "Determined chart folder as ${chartFolder}"
   echo "user specified folder: ${userSpecifiedChartFolder}"
   def manifestFolder = config.manifestFolder ?: ((env.MANIFEST_FOLDER ?: "").trim() ?: 'manifests')
