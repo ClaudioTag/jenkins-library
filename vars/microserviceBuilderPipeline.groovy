@@ -170,11 +170,6 @@ def call(body) {
           
           stage ('Docker Build') {
             container ('docker') {
-// Test to see if it picks up a specific image
-              imageTag = "latest"
-//              imageTag = gitCommit
-              def dockerImages = sh(script: 'docker images', returnStdout: true)
-              echo "${dockerImages}"
               def buildCommand = "docker build -t ${image}:${imageTag} "
               buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
               def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
@@ -215,11 +210,14 @@ def call(body) {
       if (fileExists(chartFolder)) {
         // find the likely chartFolder location
         realChartFolder = getChartFolder(userSpecifiedChartFolder, chartFolder)
+        print "debug, real chart folder ${realChartFolder}"
+        
         def yamlContent = "image:"
         yamlContent += "\n  repository: ${registry}${image}"
         if (imageTag) yamlContent += "\n  tag: \\\"${imageTag}\\\""
         sh "echo \"${yamlContent}\" > pipeline.yaml"
       } else if (fileExists(manifestFolder)){
+        print "debug, found manifest folder"
         sh "find ${manifestFolder} -type f | xargs sed -i 's|\\(image:\\s*\\)${image}:latest|\\1${registry}${image}:latest|g'"
         sh "find ${manifestFolder} -type f | xargs sed -i 's|\\(image:\\s*\\)${registry}${image}:latest|\\1${registry}${image}:${gitCommit}|g'"
       }
@@ -314,10 +312,13 @@ def initalizeHelm (String tillerNamespace) {
 }
 
 def deployProject (String chartFolder, String registry, String image, String imageTag, String namespace, String manifestFolder, String registrySecret) {
+  print "debug in deploy project logic"
   if (chartFolder != null && fileExists(chartFolder)) {
+    print "chart folder isn't null and file exists ok"
     container ('helm') {
       def deployCommand = "helm upgrade --install --wait --values pipeline.yaml"
       if (fileExists("chart/overrides.yaml")) {
+        print "using chart/overrides.yaml"
         deployCommand += " --values chart/overrides.yaml"
       }
       if (namespace) {
@@ -326,6 +327,7 @@ def deployProject (String chartFolder, String registry, String image, String ima
       }
       def releaseName = (env.BRANCH_NAME == "master") ? "${image}" : "${image}-${env.BRANCH_NAME}"
       deployCommand += " ${releaseName} ${chartFolder}"
+      print "debug determined deploy command is ${deployCommand}"
       sh deployCommand
     }
   } else if (fileExists(manifestFolder)) {
